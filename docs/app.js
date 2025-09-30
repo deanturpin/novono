@@ -6,6 +6,9 @@ env.allowLocalModels = false;
 env.useBrowserCache = true;
 env.backends.onnx.wasm.numThreads = 1;
 
+// Use custom model cache location
+env.cacheDir = './.cache';
+
 // UI elements
 const downloadSection = document.getElementById('downloadSection');
 const downloadBtn = document.getElementById('downloadBtn');
@@ -31,11 +34,13 @@ async function loadModel() {
     status.classList.remove('hidden');
 
     try {
+        // Try with whisper-tiny (not .en specific) which is more widely available
         transcriber = await pipeline(
             'automatic-speech-recognition',
-            'Xenova/whisper-tiny.en',
+            'Xenova/whisper-tiny',
             {
-                quantized: false,
+                revision: 'main',
+                quantized: true,  // Use quantized for smaller download
                 progress_callback: (progress) => {
                     console.log('Progress:', progress);
                     if (progress.status === 'progress' && progress.progress) {
@@ -46,13 +51,17 @@ async function loadModel() {
                         statusText.textContent = 'Downloading model files...';
                     } else if (progress.status === 'done') {
                         statusText.textContent = 'Model loaded successfully!';
+                    } else if (progress.status === 'initiate') {
+                        statusText.textContent = `Loading ${progress.name}...`;
                     }
                 }
             }
         );
+        console.log('Model loaded successfully!');
         return transcriber;
     } catch (error) {
         console.error('Error loading model:', error);
+        console.error('Error stack:', error.stack);
         statusText.textContent = `Error: ${error.message}. Check console for details.`;
         throw error;
     }
