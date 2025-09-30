@@ -80,6 +80,16 @@ Deployed to GitHub Pages via GitHub Actions. Every push to `main` triggers a bui
 
 ## Future Features
 
+### Smart Features (No AI Required)
+- **Offline summary/actions** - Extract key points using text analysis, not AI:
+  - Detect questions (ends with "?")
+  - Find times/dates mentioned
+  - Identify phone numbers, emails, addresses
+  - Highlight action words ("call", "meet", "send", "buy", etc.)
+  - Show word frequency for main topics
+  - Simple bullet-point extraction
+
+### AI-Enhanced Features (Optional)
 - Summarisation (add small LLM)
 - Extract action items
 - Multiple languages
