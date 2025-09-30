@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>novono - Voice Note Transcription</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>novono</h1>
+            <p class="tagline">Drop a voice note, get text. Private and offline.</p>
+        </header>
+
+        <main>
+            <div id="dropZone" class="drop-zone">
+                <div class="drop-content">
+                    <svg class="icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
+                    <p class="drop-text">Drop audio file here</p>
+                    <p class="drop-hint">or click to browse</p>
+                    <p class="formats">Supports: m4a, mp3, ogg, wav</p>
+                </div>
+                <input type="file" id="fileInput" accept="audio/*" hidden>
+            </div>
+
+            <div id="status" class="status hidden">
+                <div class="spinner"></div>
+                <p id="statusText">Loading model...</p>
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="result" class="result hidden">
+                <div class="result-header">
+                    <h2>Transcription</h2>
+                    <button id="copyBtn" class="btn-copy">Copy</button>
+                </div>
+                <div id="transcription" class="transcription"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Audio never leaves your device • No accounts • No cost</p>
+        </footer>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

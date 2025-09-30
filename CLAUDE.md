@@ -20,21 +20,28 @@ novono is a voice note transcription Progressive Web App that runs entirely in t
 npm install
 
 # Run local development server
-npx vite
+npm run dev
 
-# Build for production (static files only)
-# No build step initially required
+# Test transcription with audio file (Node.js, no browser)
+npm test audio-file.mp3
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
 ## Architecture
 
 The application follows a simple static web app structure:
 
-- `index.html` - Main UI with drag-and-drop file upload
-- `app.js` - Transcription logic using Transformers.js Whisper
-- `styles.css` - Responsive styling
-- `sw.js` - Service worker for offline support and model caching
-- `manifest.json` - PWA manifest for installation
+- `docs/index.html` - Main UI with drag-and-drop file upload
+- `docs/app.js` - Transcription logic using Transformers.js Whisper
+- `docs/styles.css` - Responsive styling
+- `docs/sw.js` - Service worker for offline support and model caching (not yet implemented)
+- `docs/manifest.json` - PWA manifest for installation (not yet implemented)
+- `test-transcribe.js` - Node.js test script for automated transcription testing
 
 ### Key Implementation Details
 
