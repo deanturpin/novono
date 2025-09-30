@@ -36,6 +36,30 @@ h1 {
 .tagline {
     font-size: 1.1rem;
     opacity: 0.95;
+    margin-bottom: 20px;
+}
+
+.privacy-badge {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: inline-flex;
+    align-items: centre;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.privacy-badge p {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.shield-icon {
+    colour: white;
+    flex-shrink: 0;
 }
 
 main {
@@ -203,5 +227,14 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
+    }
+
+    .privacy-badge {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    .privacy-badge p {
+        font-size: 0.8rem;
     }
 }
