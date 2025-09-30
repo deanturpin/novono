@@ -3,11 +3,9 @@ import { pipeline, env } from '@xenova/transformers';
 // Configure to use HuggingFace CDN for models
 env.allowRemoteModels = true;
 env.allowLocalModels = false;
-env.useBrowserCache = true;
+// Remove browser cache requirement - let it auto-detect
+// env.useBrowserCache = true;
 env.backends.onnx.wasm.numThreads = 1;
-
-// Use custom model cache location
-env.cacheDir = './.cache';
 
 // UI elements
 const downloadSection = document.getElementById('downloadSection');
@@ -36,19 +34,14 @@ if ('serviceWorker' in navigator) {
 
 // Check if model is already cached on page load
 window.addEventListener('DOMContentLoaded', async () => {
-    // Try to check if model exists in IndexedDB cache
-    try {
-        const databases = await indexedDB.databases();
-        const hasCache = databases.some(db => db.name && db.name.includes('transformers'));
+    // Simply check localStorage for a flag instead of IndexedDB
+    const modelDownloaded = localStorage.getItem('novono-model-downloaded');
 
-        if (hasCache) {
-            console.log('Model cache found, skipping download');
-            downloadSection.classList.add('hidden');
-            dropZone.classList.remove('hidden');
-            modelReady = true;
-        }
-    } catch (error) {
-        console.log('Could not check cache, showing download button');
+    if (modelDownloaded) {
+        console.log('Model previously downloaded, skipping download screen');
+        downloadSection.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+        modelReady = true;
     }
 
     // Check if this page load came from a share action
@@ -222,6 +215,9 @@ downloadBtn.addEventListener('click', async () => {
     try {
         await loadModel();
         modelReady = true;
+
+        // Save flag that model has been downloaded
+        localStorage.setItem('novono-model-downloaded', 'true');
 
         // Hide download section, show drop zone
         downloadSection.classList.add('hidden');

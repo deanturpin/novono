@@ -3,7 +3,7 @@ import { copyFileSync } from 'fs'
 
 export default defineConfig({
   root: 'docs',
-  base: '/novono/',
+  base: process.env.NODE_ENV === 'production' ? '/novono/' : '/novono/',
   build: {
     outDir: '../dist',
     emptyOutDir: true,
