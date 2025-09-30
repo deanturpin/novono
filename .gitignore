@@ -2,6 +2,5 @@ node_modules/
 dist/
 *.mp3
 *.m4a
-*.wav
 *.ogg
 .DS_Store
