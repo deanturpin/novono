@@ -11,6 +11,7 @@ const downloadSection = document.getElementById('downloadSection');
 const downloadBtn = document.getElementById('downloadBtn');
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
+const testBtn = document.getElementById('testBtn');
 const status = document.getElementById('status');
 const statusText = document.getElementById('statusText');
 const progressBar = document.getElementById('progressBar');
@@ -168,5 +169,20 @@ downloadBtn.addEventListener('click', async () => {
         downloadBtn.disabled = false;
         downloadBtn.textContent = 'Download Model';
         status.classList.add('hidden');
+    }
+});
+
+// Test with sample audio button
+testBtn.addEventListener('click', async () => {
+    try {
+        // Fetch one of the test samples
+        const response = await fetch('../test-samples/sample1.wav');
+        const blob = await response.blob();
+        const file = new File([blob], 'sample1.wav', { type: 'audio/wav' });
+
+        await transcribeAudio(file);
+    } catch (error) {
+        console.error('Error loading test audio:', error);
+        alert('Could not load test audio file');
     }
 });

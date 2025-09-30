@@ -153,6 +153,25 @@ main {
 .formats {
     font-size: 0.85rem;
     colour: #a0aec0;
+    margin-bottom: 20px;
+}
+
+.btn-test {
+    background: transparent;
+    colour: #667eea;
+    border: 2px solid #667eea;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 16px;
+}
+
+.btn-test:hover {
+    background: #667eea;
+    colour: white;
 }
 
 .status {
