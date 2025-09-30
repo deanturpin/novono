@@ -65,20 +65,37 @@ async function transcribeAudio(file) {
         statusText.textContent = 'Loading model...';
         progressBar.style.width = '0%';
 
-        // Load model
+        // Ensure model is loaded
+        if (!modelReady) {
+            statusText.textContent = 'Model not ready. Please download it first.';
+            setTimeout(() => {
+                status.classList.add('hidden');
+                downloadSection.classList.remove('hidden');
+                dropZone.classList.add('hidden');
+            }, 2000);
+            return;
+        }
+
         const model = await loadModel();
 
         // Read audio file
         statusText.textContent = 'Processing audio...';
-        progressBar.style.width = '100%';
+        progressBar.style.width = '50%';
 
-        const audioData = await file.arrayBuffer();
+        // Read file as URL for the model
+        const url = URL.createObjectURL(file);
 
         // Transcribe
         statusText.textContent = 'Transcribing...';
-        const output = await model(audioData);
+        progressBar.style.width = '75%';
+
+        const output = await model(url);
+
+        // Clean up
+        URL.revokeObjectURL(url);
 
         // Display result
+        progressBar.style.width = '100%';
         status.classList.add('hidden');
         result.classList.remove('hidden');
         transcription.textContent = output.text;
@@ -86,7 +103,7 @@ async function transcribeAudio(file) {
     } catch (error) {
         console.error('Transcription error:', error);
         status.classList.add('hidden');
-        alert('Error transcribing audio. Please try again.');
+        alert(`Error transcribing audio: ${error.message}`);
     }
 }
 
