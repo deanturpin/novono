@@ -22,7 +22,7 @@
       "files": [
         {
           "name": "audio",
-          "accept": ["audio/*", ".m4a", ".mp3", ".ogg", ".wav"]
+          "accept": ["audio/*", ".opus", ".m4a", ".mp3", ".ogg", ".wav", "audio/opus", "audio/ogg", "audio/mpeg", "audio/mp4", "audio/wav"]
         }
       ]
     }
