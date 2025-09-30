@@ -34,12 +34,25 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Handle shared files (when user shares audio to the app)
+// Check if model is already cached on page load
 window.addEventListener('DOMContentLoaded', async () => {
+    // Try to check if model exists in IndexedDB cache
+    try {
+        const databases = await indexedDB.databases();
+        const hasCache = databases.some(db => db.name && db.name.includes('transformers'));
+
+        if (hasCache) {
+            console.log('Model cache found, skipping download');
+            downloadSection.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            modelReady = true;
+        }
+    } catch (error) {
+        console.log('Could not check cache, showing download button');
+    }
+
     // Check if this page load came from a share action
     if (window.location.search.includes('share-target')) {
-        // The shared file will be in the POST data
-        // We need to handle it differently since it's POST
         console.log('App opened via share');
     }
 });
@@ -175,6 +188,29 @@ copyBtn.addEventListener('click', () => {
     }, 2000);
 });
 
+// PWA install prompt
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+});
+
+function showInstallPrompt() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User installed the PWA');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        // Fallback for iOS or if prompt not available
+        alert('To install: tap Share → Add to Home Screen');
+    }
+}
+
 // Download model button
 downloadBtn.addEventListener('click', async () => {
     downloadBtn.disabled = true;
@@ -191,6 +227,14 @@ downloadBtn.addEventListener('click', async () => {
         downloadSection.classList.add('hidden');
         dropZone.classList.remove('hidden');
         status.classList.add('hidden');
+
+        // Suggest installing the app
+        setTimeout(() => {
+            const shouldInstall = confirm('Model downloaded! Want to add novono to your home screen for quick access?');
+            if (shouldInstall) {
+                showInstallPrompt();
+            }
+        }, 500);
 
     } catch (error) {
         downloadBtn.disabled = false;
