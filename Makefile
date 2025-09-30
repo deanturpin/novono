@@ -1,4 +1,6 @@
-.PHONY: serve install deploy
+.PHONY: all serve install deploy
+
+all: install serve
 
 serve:
 	npm run dev

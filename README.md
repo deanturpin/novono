@@ -26,18 +26,6 @@ Voice note transcription PWA - because nobody wants to listen to long voice note
 - **Hosting**: Static site (Vercel/Netlify/GitHub Pages)
 - **PWA**: Service worker for offline capability and model caching
 
-## Project Structure
-
-```
-novono/
-├── index.html          # Main UI
-├── styles.css          # Styling
-├── app.js              # Transcription logic
-├── manifest.json       # PWA manifest
-├── sw.js               # Service worker
-├── package.json        # Dependencies (just Transformers.js)
-└── README.md           # This file
-```
 
 ## Implementation Steps
 
