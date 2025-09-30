@@ -1,8 +1,10 @@
 import { pipeline, env } from '@xenova/transformers';
 
-// Configure to use CDN for models
+// Configure to use HuggingFace CDN for models
 env.allowRemoteModels = true;
 env.allowLocalModels = false;
+env.useBrowserCache = true;
+env.backends.onnx.wasm.numThreads = 1;
 
 // UI elements
 const dropZone = document.getElementById('dropZone');
@@ -25,19 +27,29 @@ async function loadModel() {
     status.classList.remove('hidden');
 
     try {
-        transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-tiny.en', {
-            progress_callback: (progress) => {
-                if (progress.status === 'downloading') {
-                    const percent = Math.round((progress.loaded / progress.total) * 100);
-                    progressBar.style.width = `${percent}%`;
-                    statusText.textContent = `Downloading model: ${percent}%`;
+        transcriber = await pipeline(
+            'automatic-speech-recognition',
+            'Xenova/whisper-tiny.en',
+            {
+                quantized: false,
+                progress_callback: (progress) => {
+                    console.log('Progress:', progress);
+                    if (progress.status === 'progress' && progress.progress) {
+                        const percent = Math.round(progress.progress);
+                        progressBar.style.width = `${percent}%`;
+                        statusText.textContent = `Downloading model: ${percent}%`;
+                    } else if (progress.status === 'downloading') {
+                        statusText.textContent = 'Downloading model files...';
+                    } else if (progress.status === 'done') {
+                        statusText.textContent = 'Model loaded successfully!';
+                    }
                 }
             }
-        });
+        );
         return transcriber;
     } catch (error) {
         console.error('Error loading model:', error);
-        statusText.textContent = 'Error loading model. Please refresh and try again.';
+        statusText.textContent = `Error: ${error.message}. Check console for details.`;
         throw error;
     }
 }
