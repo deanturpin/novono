@@ -69,6 +69,48 @@ main {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+.download-section {
+    text-align: centre;
+    padding: 40px;
+}
+
+.download-section h2 {
+    font-size: 1.5rem;
+    colour: #2d3748;
+    margin-bottom: 16px;
+}
+
+.download-section p {
+    colour: #718096;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.btn-download {
+    background: #667eea;
+    colour: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-download:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-download:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .drop-zone {
     border: 3px dashed #cbd5e0;
     border-radius: 12px;

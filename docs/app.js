@@ -7,6 +7,8 @@ env.useBrowserCache = true;
 env.backends.onnx.wasm.numThreads = 1;
 
 // UI elements
+const downloadSection = document.getElementById('downloadSection');
+const downloadBtn = document.getElementById('downloadBtn');
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const status = document.getElementById('status');
@@ -18,6 +20,7 @@ const copyBtn = document.getElementById('copyBtn');
 
 // Model instance (cached after first load)
 let transcriber = null;
+let modelReady = false;
 
 // Initialize the transcription pipeline
 async function loadModel() {
@@ -125,4 +128,28 @@ copyBtn.addEventListener('click', () => {
     setTimeout(() => {
         copyBtn.textContent = 'Copy';
     }, 2000);
+});
+
+// Download model button
+downloadBtn.addEventListener('click', async () => {
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = 'Downloading...';
+
+    downloadSection.style.display = 'block';
+    status.classList.remove('hidden');
+
+    try {
+        await loadModel();
+        modelReady = true;
+
+        // Hide download section, show drop zone
+        downloadSection.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+        status.classList.add('hidden');
+
+    } catch (error) {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'Download Model';
+        status.classList.add('hidden');
+    }
 });
