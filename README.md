@@ -53,6 +53,10 @@ Voice note transcription PWA - because nobody wants to listen to long voice note
    - Supported audio formats (m4a, ogg, mp3, wav)
    - Dark mode optional
 
+## Live Demo
+
+**https://deanturpin.github.io/novono/**
+
 ## Development
 
 ```bash
@@ -60,15 +64,19 @@ Voice note transcription PWA - because nobody wants to listen to long voice note
 npm install
 
 # Run local dev server
-npx vite  # or any static server
+make serve
+# or: npm run dev
 
 # Build for production
-# (just static files, no build step needed initially)
+npm run build
+
+# Deploy (auto-commits and pushes)
+make deploy
 ```
 
 ## Deployment
 
-Deploy to Vercel/Netlify/GitHub Pages - all static files.
+Deployed to GitHub Pages via GitHub Actions. Every push to `main` triggers a build and deploy.
 
 ## Future Features
 
