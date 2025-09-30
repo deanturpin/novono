@@ -25,6 +25,25 @@ const copyBtn = document.getElementById('copyBtn');
 let transcriber = null;
 let modelReady = false;
 
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('Service Worker registered');
+    }).catch(err => {
+        console.log('Service Worker registration failed:', err);
+    });
+}
+
+// Handle shared files (when user shares audio to the app)
+window.addEventListener('DOMContentLoaded', async () => {
+    // Check if this page load came from a share action
+    if (window.location.search.includes('share-target')) {
+        // The shared file will be in the POST data
+        // We need to handle it differently since it's POST
+        console.log('App opened via share');
+    }
+});
+
 // Initialize the transcription pipeline
 async function loadModel() {
     if (transcriber) return transcriber;

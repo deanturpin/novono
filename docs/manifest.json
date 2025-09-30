@@ -1,0 +1,30 @@
+{
+  "name": "novono - Voice Note Transcription",
+  "short_name": "novono",
+  "description": "Transcribe voice notes offline. Private and fast.",
+  "start_url": "/novono/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/novono/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "share_target": {
+    "action": "/novono/",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "audio",
+          "accept": ["audio/*", ".m4a", ".mp3", ".ogg", ".wav"]
+        }
+      ]
+    }
+  }
+}
