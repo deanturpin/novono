@@ -1,4 +1,8 @@
-import { pipeline } from '@xenova/transformers';
+import { pipeline, env } from '@xenova/transformers';
+
+// Configure to use CDN for models
+env.allowRemoteModels = true;
+env.allowLocalModels = false;
 
 // UI elements
 const dropZone = document.getElementById('dropZone');
