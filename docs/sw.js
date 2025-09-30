@@ -1,4 +1,4 @@
-const CACHE_NAME = 'novono-v1';
+const CACHE_NAME = 'novono-v2';
 
 // Install event - cache essential assets
 self.addEventListener('install', (event) => {
@@ -6,10 +6,18 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate event
+// Activate event - clear old caches
 self.addEventListener('activate', (event) => {
     console.log('Service Worker activating...');
-    event.waitUntil(clients.claim());
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames
+                    .filter(name => name !== CACHE_NAME)
+                    .map(name => caches.delete(name))
+            );
+        }).then(() => clients.claim())
+    );
 });
 
 // Fetch event - serve from cache when offline
