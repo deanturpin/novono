@@ -54,10 +54,50 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Check if this page load came from a share action
-    if (window.location.search.includes('share-target')) {
+    if (window.location.search.includes('shared=true')) {
         console.log('App opened via share');
+        // Retrieve and process the shared audio file
+        handleSharedAudio();
     }
 });
+
+// Handle shared audio from share target
+async function handleSharedAudio() {
+    try {
+        const cache = await caches.open('novono-v2');
+        const response = await cache.match('shared-audio');
+
+        if (response) {
+            const blob = await response.blob();
+            const file = new File([blob], 'shared-audio', { type: blob.type });
+
+            // Delete the cached file
+            await cache.delete('shared-audio');
+
+            // Clear the URL parameter
+            const url = new URL(window.location);
+            url.searchParams.delete('shared');
+            window.history.replaceState({}, '', url);
+
+            // Wait for model to be ready, then transcribe
+            if (!modelReady) {
+                // Auto-download model if not ready
+                downloadBtn.click();
+                // Wait for model to be ready
+                const checkReady = setInterval(() => {
+                    if (modelReady) {
+                        clearInterval(checkReady);
+                        transcribeAudio(file);
+                    }
+                }, 1000);
+            } else {
+                transcribeAudio(file);
+            }
+        }
+    } catch (error) {
+        console.error('Error handling shared audio:', error);
+    }
+}
 
 // Initialize the transcription pipeline
 async function loadModel() {
@@ -124,19 +164,41 @@ async function transcribeAudio(file) {
 
         // Read audio file
         statusText.textContent = 'Processing audio...';
-        progressBar.style.width = '50%';
+        progressBar.style.width = '20%';
 
         // Read file as URL for the model
         const url = URL.createObjectURL(file);
 
-        // Transcribe
-        statusText.textContent = 'Transcribing...';
-        progressBar.style.width = '75%';
+        // Get audio duration first
+        const audio = new Audio(url);
+        await new Promise((resolve) => {
+            audio.addEventListener('loadedmetadata', resolve);
+        });
+        const duration = Math.round(audio.duration);
+
+        // Transcribe with chunk-based progress
+        let currentChunk = 0;
+        const chunkSize = 30; // seconds per chunk
+        const totalChunks = Math.ceil(duration / chunkSize);
+
+        statusText.textContent = `Transcribing ${duration}s audio...`;
+        progressBar.style.width = '30%';
 
         const output = await model(url, {
-            // Add options to prevent repetition
+            // Add options to prevent repetition and process longer audio
             chunk_length_s: 30,
-            stride_length_s: 5
+            stride_length_s: 5,
+            // Add progress callback for transcription
+            callback_function: (beams) => {
+                // Update progress based on chunks processed
+                if (beams) {
+                    currentChunk++;
+                    const progress = Math.min(30 + (currentChunk / totalChunks) * 60, 90);
+                    progressBar.style.width = `${progress}%`;
+                    const processed = Math.min(currentChunk * chunkSize, duration);
+                    statusText.textContent = `Transcribing... ${processed}/${duration}s processed`;
+                }
+            }
         });
 
         // Clean up

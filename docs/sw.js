@@ -20,10 +20,36 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - handle share target and serve from cache when offline
 self.addEventListener('fetch', (event) => {
-    // Let the browser handle all requests normally
-    // We're not implementing offline caching for now as the app needs internet
-    // for the initial model download anyway
+    const url = new URL(event.request.url);
+
+    // Handle share target POST requests
+    if (event.request.method === 'POST' && url.pathname.endsWith('/')) {
+        event.respondWith(
+            (async () => {
+                const formData = await event.request.formData();
+                const audioFile = formData.get('audio');
+
+                if (audioFile) {
+                    // Store the file temporarily and redirect to main page
+                    const cache = await caches.open(CACHE_NAME);
+                    const response = new Response(audioFile, {
+                        headers: { 'Content-Type': audioFile.type }
+                    });
+                    await cache.put('shared-audio', response);
+
+                    // Redirect to main page with a flag
+                    return Response.redirect(url.origin + url.pathname + '?shared=true', 303);
+                }
+
+                // If no file, just redirect to main page
+                return Response.redirect(url.origin + url.pathname, 303);
+            })()
+        );
+        return;
+    }
+
+    // Let the browser handle all other requests normally
     return;
 });
