@@ -34,7 +34,16 @@ if ('serviceWorker' in navigator) {
 
 // Check if model is already cached on page load
 window.addEventListener('DOMContentLoaded', async () => {
-    // Simply check localStorage for a flag instead of IndexedDB
+    // Check localStorage for model version
+    const modelVersion = localStorage.getItem('novono-model-version');
+    const currentVersion = 'whisper-small-v1';  // Bump this when changing models
+
+    // If different version, clear flag to re-download
+    if (modelVersion !== currentVersion) {
+        localStorage.removeItem('novono-model-downloaded');
+        localStorage.setItem('novono-model-version', currentVersion);
+    }
+
     const modelDownloaded = localStorage.getItem('novono-model-downloaded');
 
     if (modelDownloaded) {
@@ -58,13 +67,14 @@ async function loadModel() {
     status.classList.remove('hidden');
 
     try {
-        // Try with whisper-tiny (not .en specific) which is more widely available
+        // Use whisper-small for better accuracy (larger but more accurate)
+        // Options: whisper-tiny (~39MB), whisper-base (~74MB), whisper-small (~244MB)
         transcriber = await pipeline(
             'automatic-speech-recognition',
-            'Xenova/whisper-tiny',
+            'Xenova/whisper-small',
             {
                 revision: 'main',
-                quantized: true,  // Use quantized for smaller download
+                quantized: true,  // Use quantized version to reduce size (~150MB instead of ~244MB)
                 progress_callback: (progress) => {
                     console.log('Progress:', progress);
                     if (progress.status === 'progress' && progress.progress) {
