@@ -224,13 +224,7 @@ downloadBtn.addEventListener('click', async () => {
         dropZone.classList.remove('hidden');
         status.classList.add('hidden');
 
-        // Suggest installing the app
-        setTimeout(() => {
-            const shouldInstall = confirm('Model downloaded! Want to add novono to your home screen for quick access?');
-            if (shouldInstall) {
-                showInstallPrompt();
-            }
-        }, 500);
+        // Installation prompt removed - too annoying!
 
     } catch (error) {
         downloadBtn.disabled = false;
