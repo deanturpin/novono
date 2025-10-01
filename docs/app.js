@@ -123,16 +123,42 @@ async function transcribeAudio(file) {
         statusText.textContent = 'Transcribing...';
         progressBar.style.width = '75%';
 
-        const output = await model(url);
+        const output = await model(url, {
+            // Add options to prevent repetition
+            chunk_length_s: 30,
+            stride_length_s: 5
+        });
 
         // Clean up
         URL.revokeObjectURL(url);
+
+        // Clean up repetitive text
+        let text = output.text || '';
+
+        // Detect and fix repetition (if the same phrase appears 5+ times)
+        const phrases = text.match(/[^.!?]+[.!?]+/g) || [text];
+        if (phrases.length > 5) {
+            // Count phrase occurrences
+            const counts = {};
+            phrases.forEach(phrase => {
+                const cleaned = phrase.trim();
+                counts[cleaned] = (counts[cleaned] || 0) + 1;
+            });
+
+            // If any phrase repeats more than 5 times, it's likely a loop
+            const maxCount = Math.max(...Object.values(counts));
+            if (maxCount > 5) {
+                // Keep only unique phrases
+                const unique = [...new Set(phrases)];
+                text = unique.join(' ') + ' [Note: Repetition detected and removed]';
+            }
+        }
 
         // Display result
         progressBar.style.width = '100%';
         status.classList.add('hidden');
         result.classList.remove('hidden');
-        transcription.textContent = output.text;
+        transcription.textContent = text;
 
     } catch (error) {
         console.error('Transcription error:', error);
