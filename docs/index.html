@@ -29,6 +29,14 @@
                 <p>Download the AI model (~40MB)</p>
                 <p class="subtext">Downloads once, works offline forever. Even after adding to home screen.</p>
                 <button id="downloadBtn" class="btn-download">Download & Start</button>
+
+                <div id="status" class="status hidden">
+                    <div class="spinner"></div>
+                    <p id="statusText">Loading model...</p>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="dropZone" class="drop-zone hidden">
@@ -41,14 +49,6 @@
                     <p class="formats">Supports: opus, m4a, mp3, ogg, wav</p>
                 </div>
                 <input type="file" id="fileInput" accept="audio/*" hidden>
-            </div>
-
-            <div id="status" class="status hidden">
-                <div class="spinner"></div>
-                <p id="statusText">Loading model...</p>
-                <div class="progress-bar">
-                    <div id="progressBar" class="progress-fill"></div>
-                </div>
             </div>
 
             <div id="result" class="result hidden">

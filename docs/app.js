@@ -209,7 +209,7 @@ downloadBtn.addEventListener('click', async () => {
     downloadBtn.disabled = true;
     downloadBtn.textContent = 'Downloading...';
 
-    downloadSection.style.display = 'block';
+    // Show status below button (status is now inside downloadSection)
     status.classList.remove('hidden');
 
     try {
