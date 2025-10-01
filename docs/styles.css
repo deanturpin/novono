@@ -82,8 +82,14 @@ main {
 
 .download-section p {
     colour: #718096;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     line-height: 1.6;
+}
+
+.download-section .subtext {
+    font-size: 0.9rem;
+    colour: #a0aec0;
+    margin-bottom: 24px;
 }
 
 .btn-download {
