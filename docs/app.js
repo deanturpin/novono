@@ -3,9 +3,14 @@ import { pipeline, env } from '@xenova/transformers';
 // Configure to use HuggingFace CDN for models
 env.allowRemoteModels = true;
 env.allowLocalModels = false;
-// Remove browser cache requirement - let it auto-detect
-// env.useBrowserCache = true;
-env.backends.onnx.wasm.numThreads = 1;
+
+// Performance optimisations
+env.backends.onnx.wasm.numThreads = navigator.hardwareConcurrency || 4; // Use all CPU cores
+
+// Enable WebGPU for GPU acceleration (falls back to WASM if not available)
+env.backends.onnx.webgpu = {
+    preferredLayout: 'NHWC'
+};
 
 // UI elements
 const downloadSection = document.getElementById('downloadSection');
