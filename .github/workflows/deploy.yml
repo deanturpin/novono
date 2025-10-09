@@ -30,7 +30,7 @@ jobs:
       - name: Inject build timestamp
         run: |
           BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M UTC")
-          sed -i "s/Loading\.\.\./$(echo $BUILD_TIME | sed 's/\//\\\//g')/" dist/index.html
+          sed -i "s/BUILD_TIMESTAMP_PLACEHOLDER/$BUILD_TIME/" dist/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

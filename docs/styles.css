@@ -66,7 +66,9 @@ h1 {
     margin-top: 16px;
     display: flex;
     justify-content: centre;
-    gap: 10px;
+    align-items: centre;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .status-badges img {
@@ -77,6 +79,15 @@ h1 {
 
 .status-badges img:hover {
     transform: scale(1.05);
+}
+
+.build-timestamp {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: monospace;
 }
 
 main {
