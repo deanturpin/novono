@@ -181,44 +181,40 @@ async function transcribeAudio(file) {
         });
         const duration = Math.round(audio.duration);
 
-        // Transcribe with chunk-based progress
-        let currentChunk = 0;
-        const chunkSize = 30; // seconds per chunk
-        const totalChunks = Math.ceil(duration / chunkSize);
+        // Show result area immediately to display streaming transcription
+        result.classList.remove('hidden');
+        transcription.textContent = 'Transcribing...';
 
         statusText.textContent = `Transcribing ${duration}s audio...`;
         progressBar.style.width = '30%';
 
-        // Show result area immediately to display streaming transcription
-        result.classList.remove('hidden');
-        transcription.textContent = '';
-
-        let streamedText = '';
+        // Start a progress animation since callback doesn't always fire reliably
+        let simulatedProgress = 30;
+        const progressInterval = setInterval(() => {
+            if (simulatedProgress < 90) {
+                simulatedProgress += 1;
+                progressBar.style.width = `${simulatedProgress}%`;
+            }
+        }, (duration * 1000) / 60); // Increment based on audio duration
 
         const output = await model(url, {
             // Add options to prevent repetition and process longer audio
             chunk_length_s: 30,
             stride_length_s: 5,
-            // Return timestamps to get chunk-by-chunk output
-            return_timestamps: 'word',
-            // Add progress callback for transcription
-            callback_function: (chunk_output) => {
-                // Update progress based on chunks processed
-                if (chunk_output) {
-                    currentChunk++;
-                    const progress = Math.min(30 + (currentChunk / totalChunks) * 60, 90);
-                    progressBar.style.width = `${progress}%`;
-                    const processed = Math.min(currentChunk * chunkSize, duration);
-                    statusText.textContent = `Transcribing... ${processed}/${duration}s`;
-
-                    // Stream partial transcription as each chunk completes
-                    if (chunk_output.text) {
-                        streamedText += chunk_output.text + ' ';
-                        transcription.textContent = streamedText;
+            // Callback for streaming updates
+            callback_function: (chunks) => {
+                // Display partial results if available
+                if (chunks && Array.isArray(chunks) && chunks.length > 0) {
+                    const partialText = chunks.map(c => c.text || '').join(' ');
+                    if (partialText) {
+                        transcription.textContent = partialText;
                     }
                 }
             }
         });
+
+        // Stop progress animation
+        clearInterval(progressInterval);
 
         // Clean up
         URL.revokeObjectURL(url);
