@@ -62,6 +62,23 @@ h1 {
     flex-shrink: 0;
 }
 
+.status-badges {
+    margin-top: 16px;
+    display: flex;
+    justify-content: centre;
+    gap: 10px;
+}
+
+.status-badges img {
+    height: 20px;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+}
+
+.status-badges img:hover {
+    transform: scale(1.05);
+}
+
 main {
     background: white;
     border-radius: 16px;
@@ -279,6 +296,12 @@ footer {
     colour: white;
     opacity: 0.9;
     font-size: 0.9rem;
+}
+
+.build-info {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 8px;
 }
 
 @media (max-width: 600px) {
