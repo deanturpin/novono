@@ -30,8 +30,11 @@ jobs:
       - name: Inject build timestamp
         run: |
           BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M UTC")
+          echo "Build time: $BUILD_TIME"
+          grep "BUILD_TIMESTAMP_PLACEHOLDER" dist/index.html || echo "Placeholder not found!"
           awk -v ts="$BUILD_TIME" '{gsub(/BUILD_TIMESTAMP_PLACEHOLDER/, ts)}1' dist/index.html > dist/index.html.tmp
           mv dist/index.html.tmp dist/index.html
+          grep "$BUILD_TIME" dist/index.html && echo "Replacement successful!" || echo "Replacement failed!"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
