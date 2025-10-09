@@ -189,19 +189,33 @@ async function transcribeAudio(file) {
         statusText.textContent = `Transcribing ${duration}s audio...`;
         progressBar.style.width = '30%';
 
+        // Show result area immediately to display streaming transcription
+        result.classList.remove('hidden');
+        transcription.textContent = '';
+
+        let streamedText = '';
+
         const output = await model(url, {
             // Add options to prevent repetition and process longer audio
             chunk_length_s: 30,
             stride_length_s: 5,
+            // Return timestamps to get chunk-by-chunk output
+            return_timestamps: 'word',
             // Add progress callback for transcription
-            callback_function: (beams) => {
+            callback_function: (chunk_output) => {
                 // Update progress based on chunks processed
-                if (beams) {
+                if (chunk_output) {
                     currentChunk++;
                     const progress = Math.min(30 + (currentChunk / totalChunks) * 60, 90);
                     progressBar.style.width = `${progress}%`;
                     const processed = Math.min(currentChunk * chunkSize, duration);
-                    statusText.textContent = `Transcribing... ${processed}/${duration}s processed`;
+                    statusText.textContent = `Transcribing... ${processed}/${duration}s`;
+
+                    // Stream partial transcription as each chunk completes
+                    if (chunk_output.text) {
+                        streamedText += chunk_output.text + ' ';
+                        transcription.textContent = streamedText;
+                    }
                 }
             }
         });
