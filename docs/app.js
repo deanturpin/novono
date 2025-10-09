@@ -41,7 +41,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('DOMContentLoaded', async () => {
     // Check localStorage for model version
     const modelVersion = localStorage.getItem('novono-model-version');
-    const currentVersion = 'whisper-small-v1';  // Bump this when changing models
+    const currentVersion = 'whisper-tiny-v1';  // Bump this when changing models
 
     // If different version, clear flag to re-download
     if (modelVersion !== currentVersion) {
@@ -112,14 +112,14 @@ async function loadModel() {
     status.classList.remove('hidden');
 
     try {
-        // Use whisper-small for better accuracy (larger but more accurate)
+        // Use whisper-tiny for speed - perfect for voice notes
         // Options: whisper-tiny (~39MB), whisper-base (~74MB), whisper-small (~244MB)
         transcriber = await pipeline(
             'automatic-speech-recognition',
-            'Xenova/whisper-small',
+            'Xenova/whisper-tiny',
             {
                 revision: 'main',
-                quantized: true,  // Use quantized version to reduce size (~150MB instead of ~244MB)
+                quantized: true,  // Use quantized version
                 progress_callback: (progress) => {
                     console.log('Progress:', progress);
                     if (progress.status === 'progress' && progress.progress) {
