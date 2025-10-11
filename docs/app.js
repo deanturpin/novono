@@ -146,13 +146,44 @@ async function loadModel() {
     }
 }
 
+// Format elapsed time as MM:SS
+function formatElapsedTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Update status with stage and elapsed time
+function updateStatus(stage, elapsedSeconds, extraInfo = '') {
+    const timeStr = formatElapsedTime(elapsedSeconds);
+    const stages = {
+        'loading': '⏳ Loading model',
+        'analysing': '🎵 Analysing audio',
+        'transcribing': '✍️ Transcribing',
+        'processing': '🔄 Processing',
+        'finalising': '✨ Finalising'
+    };
+
+    const stageText = stages[stage] || stage;
+    const extra = extraInfo ? ` ${extraInfo}` : '';
+    statusText.textContent = `${stageText}${extra} [${timeStr}]`;
+}
+
 // Transcribe audio file
 async function transcribeAudio(file) {
     try {
         result.classList.add('hidden');
         status.classList.remove('hidden');
-        statusText.textContent = 'Loading model...';
         progressBar.style.width = '0%';
+
+        // Start elapsed time tracking
+        const startTime = Date.now();
+        let elapsedInterval;
+
+        const updateElapsed = () => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            return elapsed;
+        };
 
         // Ensure model is loaded
         if (!modelReady) {
@@ -165,10 +196,13 @@ async function transcribeAudio(file) {
             return;
         }
 
+        // Stage 1: Loading model
+        updateStatus('loading', 0);
         const model = await loadModel();
+        progressBar.style.width = '10%';
 
-        // Read audio file
-        statusText.textContent = 'Processing audio...';
+        // Stage 2: Analysing audio
+        updateStatus('analysing', updateElapsed());
         progressBar.style.width = '20%';
 
         // Read file as URL for the model
@@ -181,21 +215,35 @@ async function transcribeAudio(file) {
         });
         const duration = Math.round(audio.duration);
 
+        // Calculate estimated processing time (roughly 1:1 ratio for whisper-tiny)
+        const estimatedSeconds = Math.ceil(duration * 1.2);
+        const estimatedTime = formatElapsedTime(estimatedSeconds);
+
         // Show result area immediately to display streaming transcription
         result.classList.remove('hidden');
-        transcription.textContent = 'Transcribing...';
+        transcription.textContent = '⏳ Starting transcription...';
 
-        statusText.textContent = `Transcribing ${duration}s audio...`;
+        // Stage 3: Transcribing with time estimate
+        updateStatus('transcribing', updateElapsed(), `(~${estimatedTime} est.)`);
         progressBar.style.width = '30%';
 
-        // Start a progress animation since callback doesn't always fire reliably
+        // Start elapsed time counter
+        elapsedInterval = setInterval(() => {
+            const elapsed = updateElapsed();
+            updateStatus('transcribing', elapsed, `(~${estimatedTime} est.)`);
+        }, 1000);
+
+        // Start a progress animation
         let simulatedProgress = 30;
         const progressInterval = setInterval(() => {
             if (simulatedProgress < 90) {
-                simulatedProgress += 1;
+                simulatedProgress += 0.5;
                 progressBar.style.width = `${simulatedProgress}%`;
             }
-        }, (duration * 1000) / 60); // Increment based on audio duration
+        }, (duration * 1000) / 120);
+
+        // Variable to track if we've received any streaming updates
+        let streamingActive = false;
 
         const output = await model(url, {
             // Add options to prevent repetition and process longer audio
@@ -206,15 +254,21 @@ async function transcribeAudio(file) {
                 // Display partial results if available
                 if (chunks && Array.isArray(chunks) && chunks.length > 0) {
                     const partialText = chunks.map(c => c.text || '').join(' ');
-                    if (partialText) {
-                        transcription.textContent = partialText;
+                    if (partialText && partialText.trim()) {
+                        streamingActive = true;
+                        transcription.textContent = partialText + '...';
                     }
                 }
             }
         });
 
-        // Stop progress animation
+        // Stop timers
         clearInterval(progressInterval);
+        clearInterval(elapsedInterval);
+
+        // Stage 4: Finalising
+        updateStatus('finalising', updateElapsed());
+        progressBar.style.width = '95%';
 
         // Clean up
         URL.revokeObjectURL(url);
